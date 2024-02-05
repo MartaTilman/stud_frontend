@@ -6,7 +6,9 @@
 
     <nav class="navbar">
       <div class="nav-social">
-        <img src="@/assets/logo.png" alt="logo" class="slika-nav" />
+        <router-link to="/">
+          <img src="@/assets/logo.png" alt="logo" class="slika-nav" />
+        </router-link>
         <a href="https://www.facebook.com" target="_blank"
           ><i class="fab fa-facebook-f"></i
         ></a>
@@ -22,7 +24,15 @@
           <a href="#" v-if="!isPrijavljen" @click="goToRegister">REGISTER</a>
         </li>
         <li><a href="#" v-if="!isPrijavljen" @click="goToLogin">LOGIN</a></li>
-        <p class="imeiprezime">{{ ime }} {{ prezime }}</p>
+        <router-link to="/">
+          <img
+            v-if="isPrijavljen"
+            src="@/assets/user.png"
+            alt="user"
+            class="suser"
+          />
+        </router-link>
+        <p v-if="isPrijavljen" class="imeiprezime">{{ ime }} {{ prezime }}</p>
       </ul>
     </nav>
     <div class="div-tekst">
@@ -34,7 +44,7 @@
         koje vrijeme.
       </div>
       <div class="div-kalendar">
-        📆 Organizirajte svoje vrijeme uz naš Kalendar! Nikad nije bilo lakše
+        📆 Organizirajte svoje vrijeme uz naš Planer! Nikad nije bilo lakše
         pratiti svoj raspored i ostati produktivan uz našu inovativnu kalendar
         aplikaciju. Sada možete jednostavno planirati sastanke, događaje, i
         obaveze, sve na jednom mjestu!
@@ -89,6 +99,10 @@ export default {
     const token = localStorage.getItem("token");
     if (token) {
       this.isPrijavljen = true;
+    }
+    function logout() {
+      // Ovdje obrišite podatke o prijavi korisnika iz lokalnog skladišta
+      localStorage.removeItem("loggedIn");
     }
   },
 };
@@ -295,5 +309,16 @@ body {
   margin-bottom: 10px;
   display: block;
   text-align: center;
+}
+.odjava {
+  background-color: rgba(0, 255, 0, 0.5);
+  color: white;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  transition: background-color 0.3s ease;
 }
 </style>
