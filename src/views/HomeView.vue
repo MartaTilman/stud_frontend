@@ -18,8 +18,11 @@
         ></a>
       </div>
       <ul class="nav-menu">
-        <li><a href="#" @click="goToRegister">REGISTER</a></li>
-        <li><a href="#" @click="goToLogin">LOGIN</a></li>
+        <li>
+          <a href="#" v-if="!isPrijavljen" @click="goToRegister">REGISTER</a>
+        </li>
+        <li><a href="#" v-if="!isPrijavljen" @click="goToLogin">LOGIN</a></li>
+        <p class="imeiprezime">{{ ime }} {{ prezime }}</p>
       </ul>
     </nav>
     <div class="div-tekst">
@@ -61,6 +64,9 @@ export default {
   data() {
     return {
       currentDate: "",
+      ime: "",
+      prezime: "",
+      isPrijavljen: false,
     };
   },
   methods: {
@@ -68,7 +74,7 @@ export default {
       this.$router.push({ name: "login" });
     },
     goToRegister() {
-      this.$router.push({ name: "register" });
+      this.$router.push({ name: "registracija" });
     },
     updateDate() {
       this.currentDate = new Date().toLocaleDateString();
@@ -78,11 +84,26 @@ export default {
   mounted() {
     this.updateDate();
     setInterval(this.updateDate, 86400000);
+    this.ime = localStorage.getItem("ime") || "";
+    this.prezime = localStorage.getItem("prezime") || "";
+    const token = localStorage.getItem("token");
+    if (token) {
+      this.isPrijavljen = true;
+    }
   },
 };
 </script>
 
 <style scoped>
+.imeiprezime {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-size: 20px;
+  transition: color 0.3s ease;
+  float: right;
+}
 .div-tekst {
   display: grid;
   grid-template-columns: auto auto;

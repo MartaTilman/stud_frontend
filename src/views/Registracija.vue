@@ -4,11 +4,11 @@
     <form @submit.prevent="register">
       <div>
         <label for="Ime">Ime:</label>
-        <input type="text" id="ime" v-model="userData.username" required />
+        <input type="text" id="ime" v-model="userData.firstname" required />
       </div>
       <div>
         <label for="Prezime">Prezime:</label>
-        <input type="text" id="prezime" v-model="userData.username" required />
+        <input type="text" id="prezime" v-model="userData.lastname" required />
       </div>
       <div>
         <label for="email">Email adresa:</label>
@@ -33,7 +33,8 @@ export default {
   data() {
     return {
       userData: {
-        username: "",
+        firstname: "",
+        lastname: "",
         email: "",
         password: "",
       },
@@ -42,7 +43,7 @@ export default {
   methods: {
     async register() {
       try {
-        const response = await fetch("http://localhost:8080/src/registracija", {
+        const response = await fetch("http://localhost:5000/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
