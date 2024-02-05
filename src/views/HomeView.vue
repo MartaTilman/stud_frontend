@@ -24,12 +24,19 @@
           <a href="#" v-if="!isPrijavljen" @click="goToRegister">REGISTER</a>
         </li>
         <li><a href="#" v-if="!isPrijavljen" @click="goToLogin">LOGIN</a></li>
+        <img
+          @click="logout"
+          v-if="isPrijavljen"
+          src="@/assets/odjava.png"
+          alt="odjava"
+          class="odjava"
+        />
         <router-link to="/">
           <img
             v-if="isPrijavljen"
             src="@/assets/user.png"
             alt="user"
-            class="suser"
+            class="user"
           />
         </router-link>
         <p v-if="isPrijavljen" class="imeiprezime">{{ ime }} {{ prezime }}</p>
@@ -89,6 +96,12 @@ export default {
     updateDate() {
       this.currentDate = new Date().toLocaleDateString();
     },
+    logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("ime");
+      localStorage.removeItem("prezime");
+      this.$router.push({ name: "login" });
+    },
   },
 
   mounted() {
@@ -99,10 +112,6 @@ export default {
     const token = localStorage.getItem("token");
     if (token) {
       this.isPrijavljen = true;
-    }
-    function logout() {
-      // Ovdje obrišite podatke o prijavi korisnika iz lokalnog skladišta
-      localStorage.removeItem("loggedIn");
     }
   },
 };
@@ -311,14 +320,8 @@ body {
   text-align: center;
 }
 .odjava {
-  background-color: rgba(0, 255, 0, 0.5);
-  color: white;
-  padding: 0.7rem 1rem;
-  border: none;
-  border-radius: 5px;
+  width: 55px;
+  height: auto;
   cursor: pointer;
-  font-size: 18px;
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  transition: background-color 0.3s ease;
 }
 </style>
