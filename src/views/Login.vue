@@ -64,6 +64,9 @@ export default {
     },
   },
   methods: {
+    goToRegister() {
+      this.$router.push({ name: "registracija" });
+    },
     toggleShow() {
       this.showPassword = !this.showPassword;
     },
