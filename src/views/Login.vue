@@ -87,7 +87,7 @@ export default {
 
             console.log(res.data);
 
-            this.$router.push("/");
+            this.$router.push("/useri");
           }
         })
         .catch((err) => {
