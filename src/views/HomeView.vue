@@ -43,25 +43,16 @@
       </ul>
     </nav>
     <div class="div-tekst">
-      <div id="div-chat" class="div-chat">
-        💬 Jednostavno komunicirajte s profesorima i kolegama uz naš Chat! Nikad
-        nije bilo lakše ostati u kontaktu s vašim profesorima i kolegama uz našu
-        intuitivnu chat aplikaciju. Bez obzira jeste li na kampusu, kod kuće ili
-        na putu, naš chat vam omogućuje brzu i učinkovitu komunikaciju u bilo
-        koje vrijeme.
-      </div>
       <div class="div-kalendar">
-        📆 Organizirajte svoje vrijeme uz naš Planer! Nikad nije bilo lakše
-        pratiti svoj raspored i ostati produktivan uz našu inovativnu kalendar
-        aplikaciju. Sada možete jednostavno planirati sastanke, događaje, i
-        obaveze, sve na jednom mjestu!
+        📝 Zapišite svoje misli uz Notes! Nikad nije bilo lakše pratiti svoje
+        ideje i ostati organiziran uz našu inovativnu aplikaciju za bilješke.
+        Sada možete jednostavno bilježiti ideje, zadatke i inspiraciju, sve na
+        jednom mjestu! Organizirajte svoje misli i budite produktivni kao nikada
+        do sada!<br /><br />
+        <button v-if="isPrijavljen" @click="goToNotes">NOTES🖋️</button>
       </div>
     </div>
-    <div>
-      <div class="slika">
-        <img src="@/assets/logo.png" alt="logo" class="title-image" />
-      </div>
-    </div>
+    <div></div>
 
     <footer class="footer">
       <p><b>&copy; 2024 STUD All rights reserved.</b></p>
@@ -96,6 +87,12 @@ export default {
     updateDate() {
       this.currentDate = new Date().toLocaleDateString();
     },
+    goToChat() {
+      this.$router.push({ name: "chat" });
+    },
+    goToNotes() {
+      this.$router.push({ name: "useri" });
+    },
     logout() {
       localStorage.removeItem("token");
       localStorage.removeItem("ime");
@@ -128,28 +125,29 @@ export default {
   float: right;
 }
 .div-tekst {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 10px;
+  display: flex; /* Koristi fleksibilni layout model */
+  justify-content: center; /* Centriraj horizontalno unutar roditeljskog elementa */
+  align-items: center; /* Centriraj vertikalno unutar roditeljskog elementa */
+  flex-direction: column; /* Postavi smjer djece na vertikalno */
+  text-align: center; /* Centriraj tekst unutar kontejnera */
 }
 .div-kalendar {
-  position: relative;
-  display: block;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  top: 50%; /* Postavi vrh diva na 50% visine roditeljskog elementa */
+  left: 50%; /* Postavi lijevi rub diva na 50% širine roditeljskog elementa */
+  transform: translate(
+    -50%,
+    -50%
+  ); /* Centriraj div na sredinu koristeći translate */
   z-index: 3;
   background-color: #008b8b;
   text-align: center;
-  width: 200px;
-  margin-left: 33%;
-
+  width: auto;
   padding: 20px;
   border-radius: 8px;
-  margin-top: 25%;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   font-weight: bold;
   color: antiquewhite;
-  padding-top: 35px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
@@ -157,34 +155,7 @@ export default {
   height: 70px;
   width: auto;
 }
-.div-chat {
-  position: relative;
-  display: block;
-  justify-content: center;
-  align-items: center;
-  z-index: 3;
-  background-color: #008b8b;
-  text-align: center;
-  width: 200px;
-  margin-left: 33%;
 
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 25%;
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  font-weight: bold;
-  color: antiquewhite;
-  padding-bottom: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-}
-.slika {
-  position: relative;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
-}
 body {
   margin: 0;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
@@ -323,5 +294,17 @@ body {
   width: 55px;
   height: auto;
   cursor: pointer;
+}
+button {
+  background-color: rgba(251, 113, 70, 0.5);
+  color: white;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
 }
 </style>

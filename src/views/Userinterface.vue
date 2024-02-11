@@ -1,9 +1,10 @@
-<template>
+
+  <template>
   <div class="welcome-container">
     <div class="background-image"></div>
 
     <div class="overlay"></div>
-
+    <!-- pocinje navbar -->
     <nav class="navbar">
       <div class="nav-social">
         <router-link to="/">
@@ -38,8 +39,68 @@
         <p v-if="isPrijavljen" class="imeiprezime">{{ ime }} {{ prezime }}</p>
       </ul>
     </nav>
-    <div class="contener">
-      <button @click="saveNote" class="spremi">SPREMI</button>
+    <!-- zavrsava navbar -->
+    <div class="prikaz">
+      <!-- prikaz notesa-->
+      <div class="note-container">
+        <div v-for="note in notes" :key="note.id">
+          <div class="note">
+            <div class="get_naslov">
+              <br />
+              <span>{{ note.title }}</span>
+            </div>
+
+            <div>
+              <p>{{ note.content }}</p>
+            </div>
+            <button class="obrisi" @click="deleteNotes(note._id)">
+              Obriši
+            </button>
+            <button
+              class="azuriraj_biljesku"
+              v-if="!isUpdateFormVisible"
+              @click="showUpdateForm(note)"
+            >
+              Ažuriraj bilješku
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- zavrsava prikaz notesa -->
+      <!-- update form -->
+      <div class="updateform">
+        <form
+          v-if="isUpdateFormVisible"
+          @submit.prevent="updateNote(selectedNoteId)"
+        >
+          <div class="updateform1">
+            <div class="naslov">
+              <input
+                type="text"
+                class="title2"
+                v-model="updateTitle"
+                placeholder="✨Naslov✨"
+                required
+              />
+            </div>
+
+            <div class="slovaupdate">
+              <textarea
+                class="content2"
+                type="text"
+                v-model="updateContent"
+                placeholder="Sadržaj ✍🏻"
+                required
+              ></textarea>
+              <button @click="updateNote(selectedNoteId)" class="azuriraj">
+                AŽURIRAJ
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- zavrsava update form -->
+      <!-- spremanje notesa -->
       <div class="notes">
         <div class="naslov">
           <input
@@ -62,34 +123,13 @@
             required
           ></textarea>
         </div>
+        <button @click="saveNote" class="spremi">SPREMI</button>
       </div>
-
-      <div class="marks">
-        <div v-for="note in notes" :key="note.id">
-          <input type="checkbox" v-model="note.selected" />
-          <div class="note">
-            <div class="get_naslov">
-              <span>{{ note.title }}</span>
-            </div>
-            <div>
-              <p>{{ note.content }}</p>
-            </div>
-          </div>
-        </div>
-        <br />
-        <button class="obrisi" @click="deleteMarkedNotes">OBRIŠI</button>
-      </div>
+      <!-- zavrsava spremanje notesa -->
     </div>
-    <footer class="footer">
-      <p><b>&copy; 2024 STUD All rights reserved.</b></p>
-      <div id="current-date">
-        <span class="date-color"
-          ><b>{{ currentDate }}</b></span
-        >
-      </div>
-    </footer>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 
@@ -104,7 +144,10 @@ export default {
       isPrijavljen: false,
       userDetails: null,
       notes: [],
-      markedNotes: [],
+      updateTitle: "",
+      updateContent: "",
+      selectedNoteId: null,
+      isUpdateFormVisible: false,
     };
   },
   created() {
@@ -112,6 +155,44 @@ export default {
     this.fetchUserDetails();
   },
   methods: {
+    showUpdateForm(note) {
+      this.updateTitle = note.title;
+      this.updateContent = note.content;
+      this.selectedNoteId = note._id;
+      this.isUpdateFormVisible = true;
+    },
+
+    // Metoda za ažuriranje bilješke
+    async updateNote(noteId) {
+      try {
+        console.log(noteId);
+        const { updateTitle, updateContent } = this;
+
+        // Poziv backend API-ja za ažuriranje bilješke
+        await axios.put(`http://localhost:5000/notes/${noteId}`, {
+          title: updateTitle,
+          content: updateContent,
+        });
+
+        // Osvježi podatke bilješki
+        await this.fetchNotes();
+
+        // Resetiraj formu
+        this.updateTitle = "";
+        this.updateContent = "";
+        this.selectedNoteId = null;
+      } catch (error) {
+        console.error("Error updating note:", error);
+      }
+    },
+
+    logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("ime");
+      localStorage.removeItem("prezime");
+      this.$router.push({ name: "login" });
+    },
+
     updateDate() {
       this.currentDate = new Date().toLocaleDateString();
     },
@@ -130,25 +211,6 @@ export default {
         console.log(this.userDetails);
       } catch (error) {
         console.error("Error fetching user details:", error);
-      }
-    },
-
-    async deleteMarkedNotes() {
-      try {
-        // Loop through each marked note and send a DELETE request
-        for (const noteId of this.markedNotes) {
-          await axios.delete(`http://localhost:5000/notes/${noteId}`);
-        }
-
-        // Remove deleted notes from the frontend display
-        this.notes = this.notes.filter(
-          (note) => !this.markedNotes.includes(note.id)
-        );
-
-        // Clear the array tracking marked notes
-        this.markedNotes = [];
-      } catch (error) {
-        console.error("Error deleting notes:", error);
       }
     },
     async fetchNotes() {
@@ -172,6 +234,15 @@ export default {
         console.error("Error fetching user details and notes:", error);
       }
     },
+    async deleteNotes(noteId) {
+      try {
+        console.log(noteId);
+        await axios.delete(`http://localhost:5000/notes/${noteId}`);
+        await this.fetchNotes();
+      } catch (error) {
+        console.error("Failed to delete note:", error);
+      }
+    },
 
     async saveNote() {
       try {
@@ -184,7 +255,7 @@ export default {
           content: this.contentInput,
           usernotes: userId,
         });
-
+        window.location.reload();
         console.log("Note saved:", response.data);
 
         // Optionally, you can reset the input fields after saving
@@ -195,6 +266,7 @@ export default {
       }
     },
   },
+
   mounted() {
     this.fetchUserDetailsAndNotes();
     this.updateDate();
@@ -210,6 +282,77 @@ export default {
 </script>
 
 <style scoped>
+.title2,
+.content2 {
+  border: none;
+  outline-color: white;
+  background: none;
+  color: azure;
+}
+.slovaupdate {
+  color: azure;
+}
+.azuriraj {
+  z-index: 3;
+  background-color: rgba(161, 250, 88, 0.5);
+  color: white;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  transition: background-color 0.3s ease;
+  margin-left: 45px;
+}
+.prikaz {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Tri jednake kolone */
+  gap: 20px; /* Razmak između kolona */
+}
+.azuriraj_biljesku {
+  background-color: rgba(251, 113, 70, 0.5);
+  color: white;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  transition: background-color 0.3s ease;
+  margin-left: 20px;
+}
+.updateform1 {
+  background-color: rgba(164, 196, 253, 0.5);
+  color: white;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 5px;
+  width: 200px;
+  font-size: 18px;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  transition: background-color 0.3s ease;
+  margin-top: 150px;
+  position: relative;
+  grid-column: 2;
+  margin-right: 100px;
+}
+.note-container {
+  margin-top: 30px;
+  margin-left: 40px;
+  max-height: 500px; /* Postavite maksimalnu visinu kontejnera */
+  overflow-y: auto;
+  scrollbar-width: none; /* Sakriti standardne scroll trake u Firefoxu */
+  -ms-overflow-style: none;
+  position: relative; /* Dodajte ovu liniju kako bi se updateform pozicionirao u odnosu na ovaj element */
+  padding-top: 10px;
+  grid-column: 1;
+}
+.note-container::-webkit-scrollbar {
+  /* Sakriti scroll trake za WebKit preglednike (Chrome, Safari, Opera) */
+  display: none;
+}
+
 .marks {
   padding-left: 100px;
   padding-top: 50px;
@@ -227,6 +370,7 @@ export default {
   font-size: 18px;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   transition: background-color 0.3s ease;
+  margin-bottom: 20px;
 }
 .obrisi {
   background-color: rgba(251, 113, 70, 0.5);
@@ -238,7 +382,8 @@ export default {
   font-size: 18px;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   transition: background-color 0.3s ease;
-  margin-left: 70px;
+  margin-left: 60px;
+  margin-bottom: 10px;
 }
 .spremi {
   position: absolute;
@@ -266,11 +411,12 @@ button:hover {
   z-index: 3;
   height: 500px;
   width: 700px;
-  top: 50px; /* Adjust as needed to move the notes down */
+  top: 150px; /* Adjust as needed to move the notes down */
   right: 0;
   border-radius: 10px;
   border: none;
   background: url("@/assets/notes.png") no-repeat;
+  grid-column: 3;
 }
 .title {
   border: none;

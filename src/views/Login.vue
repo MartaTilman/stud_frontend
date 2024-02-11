@@ -22,9 +22,6 @@
       </ul>
     </nav>
     <div class="login">
-      <div class="home-icon" @click="goToMainPage">
-        <i class="fas fa-home"></i>
-      </div>
       <div class="login_">
         <h2>LOGIN</h2>
         <br />
@@ -70,6 +67,7 @@ export default {
     toggleShow() {
       this.showPassword = !this.showPassword;
     },
+
     loginUser() {
       let user = {
         email: this.email,
@@ -99,6 +97,18 @@ export default {
 </script>
 
 <style scoped>
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  color: white;
+  text-align: center;
+  padding-bottom: 15px;
+  z-index: 2;
+  background-color: rgba(204, 204, 204, 0.3);
+  box-shadow: 0 -2px 5px #454545;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
 .welcome-container,
 .background-image {
   position: absolute;
@@ -145,6 +155,7 @@ body {
   background-position: center;
   display: flex;
   justify-content: center;
+  margin-bottom: 100px;
   align-items: center;
   z-index: 1;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
@@ -156,7 +167,7 @@ body {
   border-radius: 10px;
   text-align: center;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  position: relative;
+  position: center;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
 }
 
