@@ -39,9 +39,7 @@
       </ul>
     </nav>
     <div class="contener">
-      <button @click="saveNote" class="spremi">Spremi</button>
-      <button class="uredi">Uredi</button>
-      <button class="obrisi">Obriši</button>
+      <button @click="saveNote" class="spremi">SPREMI</button>
       <div class="notes">
         <div class="naslov">
           <input
@@ -64,6 +62,22 @@
             required
           ></textarea>
         </div>
+      </div>
+
+      <div class="marks">
+        <div v-for="note in notes" :key="note.id">
+          <input type="checkbox" v-model="note.selected" />
+          <div class="note">
+            <div class="get_naslov">
+              <span>{{ note.title }}</span>
+            </div>
+            <div>
+              <p>{{ note.content }}</p>
+            </div>
+          </div>
+        </div>
+        <br />
+        <button class="obrisi" @click="deleteMarkedNotes">OBRIŠI</button>
       </div>
     </div>
     <footer class="footer">
@@ -90,6 +104,7 @@ export default {
       isPrijavljen: false,
       userDetails: null,
       notes: [],
+      markedNotes: [],
     };
   },
   created() {
@@ -97,19 +112,6 @@ export default {
     this.fetchUserDetails();
   },
   methods: {
-    async getNotes() {
-      try {
-        const userId = this.fetchUserDetails.id; // Zamijenite s ID-em prijavljenog korisnika
-        const response = await axios.get(
-          `http://localhost:5000/notes/${userId}`
-        );
-
-        // Ažuriramo polje 'notes' s podacima koje dobijemo iz backenda
-        this.notes = response.data;
-      } catch (error) {
-        console.error("Error fetching notes:", error);
-      }
-    },
     updateDate() {
       this.currentDate = new Date().toLocaleDateString();
     },
@@ -130,6 +132,47 @@ export default {
         console.error("Error fetching user details:", error);
       }
     },
+
+    async deleteMarkedNotes() {
+      try {
+        // Loop through each marked note and send a DELETE request
+        for (const noteId of this.markedNotes) {
+          await axios.delete(`http://localhost:5000/notes/${noteId}`);
+        }
+
+        // Remove deleted notes from the frontend display
+        this.notes = this.notes.filter(
+          (note) => !this.markedNotes.includes(note.id)
+        );
+
+        // Clear the array tracking marked notes
+        this.markedNotes = [];
+      } catch (error) {
+        console.error("Error deleting notes:", error);
+      }
+    },
+    async fetchNotes() {
+      try {
+        console.log("uzima li" + this.userDetails.id);
+        const response = await axios.get(
+          "http://localhost:5000/notes/" + this.userDetails.id
+        );
+
+        this.notes = response.data;
+      } catch (error) {
+        console.error("Error fetching notes:", error);
+      }
+    },
+    async fetchUserDetailsAndNotes() {
+      try {
+        await this.fetchUserDetails(); // Fetch user details first
+        console.log(this.userDetails.id);
+        await this.fetchNotes(); // Then fetch notes for the user
+      } catch (error) {
+        console.error("Error fetching user details and notes:", error);
+      }
+    },
+
     async saveNote() {
       try {
         console.log(this.userDetails.id);
@@ -153,7 +196,7 @@ export default {
     },
   },
   mounted() {
-    this.getNotes();
+    this.fetchUserDetailsAndNotes();
     this.updateDate();
     setInterval(this.updateDate, 86400000);
     this.ime = localStorage.getItem("ime") || "";
@@ -167,20 +210,52 @@ export default {
 </script>
 
 <style scoped>
-.spremi,
-.obrisi,
-.uredi {
-  position: absolute;
-  z-index: 3;
+.marks {
+  padding-left: 100px;
+  padding-top: 50px;
 }
-.spremi {
-  right: 600px;
+.get_naslov {
+  text-transform: uppercase;
 }
-.uredi {
-  right: 330px;
+.note {
+  background-color: rgba(164, 196, 253, 0.5);
+  color: white;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 5px;
+  width: 200px;
+  font-size: 18px;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  transition: background-color 0.3s ease;
 }
 .obrisi {
+  background-color: rgba(251, 113, 70, 0.5);
+  color: white;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  transition: background-color 0.3s ease;
+  margin-left: 70px;
+}
+.spremi {
+  position: absolute;
+  z-index: 3;
   right: 70px;
+  background-color: rgba(161, 250, 88, 0.5);
+  color: white;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  transition: background-color 0.3s ease;
+}
+button:hover {
+  background-color: #FF8369(0, 255, 0, 0.4);
 }
 .contener {
   position: relative;
@@ -228,59 +303,12 @@ export default {
   grid-template-columns: auto auto;
   gap: 10px;
 }
-.div-kalendar {
-  position: relative;
-  display: block;
-  justify-content: center;
-  align-items: center;
-  z-index: 3;
-  background-color: #008b8b;
-  text-align: center;
-  width: 200px;
-  margin-left: 33%;
-
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 25%;
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  font-weight: bold;
-  color: antiquewhite;
-  padding-top: 35px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-}
 
 .slika-nav {
   height: 70px;
   width: auto;
 }
-.div-chat {
-  position: relative;
-  display: block;
-  justify-content: center;
-  align-items: center;
-  z-index: 3;
-  background-color: #008b8b;
-  text-align: center;
-  width: 200px;
-  margin-left: 33%;
 
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 25%;
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  font-weight: bold;
-  color: antiquewhite;
-  padding-bottom: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-}
-.slika {
-  position: relative;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
-}
 body {
   margin: 0;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
@@ -310,7 +338,7 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1;
+  z-index: 0;
 }
 
 .background-image {
