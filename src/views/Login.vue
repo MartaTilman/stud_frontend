@@ -75,7 +75,7 @@ export default {
       };
 
       axios
-        .post("https://startling-tarsier-c29251.netlify.app/login", user)
+        .post("https://studbackend-n246.onrender.com/login", user)
         .then((res) => {
           if (res.status === 200) {
             // Spremanje tokena u lokalno skladište
