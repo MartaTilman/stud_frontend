@@ -75,7 +75,7 @@ export default {
       };
 
       axios
-        .post("http://localhost:5000/login", user)
+        .post("https://studbackend-n246.onrender.com/login", user)
         .then((res) => {
           if (res.status === 200) {
             // Spremanje tokena u lokalno skladište
