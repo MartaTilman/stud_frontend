@@ -169,7 +169,7 @@ export default {
         const { updateTitle, updateContent } = this;
 
         // Poziv backend API-ja za ažuriranje bilješke
-        await axios.put(`https://startling-tarsier-c29251.netlify.app/notes/${noteId}`, {
+        await axios.put(`https://studbackend-n246.onrender.com/notes/${noteId}`, {
           title: updateTitle,
           content: updateContent,
         });
@@ -200,7 +200,7 @@ export default {
       try {
         // Make a request to the backend to fetch user details
         const token = localStorage.getItem("token"); // Assuming token is stored in local storage
-        const response = await axios.get("https://startling-tarsier-c29251.netlify.app/userDetails", {
+        const response = await axios.get("https://studbackend-n246.onrender.com/userDetails", {
           headers: {
             token: token,
           },
@@ -217,7 +217,7 @@ export default {
       try {
         console.log("uzima li" + this.userDetails.id);
         const response = await axios.get(
-          "https://startling-tarsier-c29251.netlify.app/notes/" + this.userDetails.id
+          "https://studbackend-n246.onrender.com/notes/" + this.userDetails.id
         );
 
         this.notes = response.data;
@@ -237,7 +237,7 @@ export default {
     async deleteNotes(noteId) {
       try {
         console.log(noteId);
-        await axios.delete(`https://startling-tarsier-c29251.netlify.app/notes/${noteId}`);
+        await axios.delete(`https://studbackend-n246.onrender.com/notes/${noteId}`);
         await this.fetchNotes();
       } catch (error) {
         console.error("Failed to delete note:", error);
@@ -250,7 +250,7 @@ export default {
         // Assuming you have access to the logged-in user's ID
         const userId = this.userDetails.id; // Replace with the method to get the user ID
 
-        const response = await axios.post("https://startling-tarsier-c29251.netlify.app/notes", {
+        const response = await axios.post("https://studbackend-n246.onrender.com/notes", {
           title: this.titleInput,
           content: this.contentInput,
           usernotes: userId,
