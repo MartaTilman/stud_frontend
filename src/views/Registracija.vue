@@ -89,7 +89,7 @@ export default {
   methods: {
     async register() {
       try {
-        const response = await fetch("http://https://studbackend-n246.onrender.com/register", {
+        const response = await fetch("https://startling-tarsier-c29251.netlify.app/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
