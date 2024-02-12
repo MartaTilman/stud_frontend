@@ -89,7 +89,7 @@ export default {
   methods: {
     async register() {
       try {
-        const response = await fetch("http://localhost:5000/register", {
+        const response = await fetch("http://https://studbackend-n246.onrender.com/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
